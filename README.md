@@ -23,6 +23,20 @@ First, to do anything, create a `Browser` object to login and store the authenti
 user = "username@domain.com"
 pass = "helloworld"
 b = Browser(user, pass)
-``
+```
+
+## Get Game Info
+In case you are playing in multiple games, you can retrieve all your games and respective ids using `Browser.getAccountInfo()`
+
+```python
+b = Browser(user, p)
+print b.getAccountInfo()
+```
+
+Sample Output:
+```python
+{'AccountValue': u'100000.00', 'BuyingPower': u'100000.00', 'AnnualReturn': u'0.00 ', 'Cash': u'100000.00'}
+>>>
+```
 
 
