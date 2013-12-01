@@ -155,7 +155,7 @@ class Browser():
 				logging.info('found id %s', prof_id.group(1))
 				self.accountInfo.profileId = prof_id.group(1)
 	
-	def getAccountInfo(self):
+	def getPortfolioInfo(self):
 		url = 'http://www.investopedia.com/simulator/portfolio/'
 		response = self.br.open(url).read()
 		soup = BSoup(response)
@@ -213,7 +213,8 @@ def main():
 	b = Browser(user, p)
 	#print b.getGames()
 	#print b.stripNumbers('$100,000,000.000%')
-	print b.getAccountInfo()
+	print b.getPortfolioInfo()
+	print b.getGames()
 	1/0
 	for i,j in b.getGames():
 		print i,j
