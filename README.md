@@ -1,17 +1,28 @@
 pyInvestopedia
 ==============
 
+<<<<<<< HEAD
 Interact with Investopedia Stock Simulator with Python.
+=======
+Interact with Investopedia Stock Simulator with Python  
+>>>>>>> a7a31b859f8ab77c6ccf249ccbf49ab775ec30a5
 Can be used to test strategies.
 
 Everything is done without interacting with an actual browser, so can be put on a cloud platform like Google App Engine.
 
 
 ## What can it do?
+<<<<<<< HEAD
 It can:
 Buy/Sell/Short/Cover stocks.
 Trade on multiple portfolios/games.
 Get portfolio info.
+=======
+It can:  
+Buy/Sell/Short/Cover stocks  
+Trade on multiple portfolios/games  
+Get portfolio info  
+>>>>>>> a7a31b859f8ab77c6ccf249ccbf49ab775ec30a5
 
 
 # Usage
@@ -32,7 +43,6 @@ In case you are playing in multiple games, you can retrieve all your games and r
 b = Browser(user, p)
 print b.getAccountInfo()
 ```
-
 Sample Output:
 A list of id,name pairs.
 ```python
@@ -55,7 +65,6 @@ b.setGame(game_id)
 b = Browser(user, p)
 print b.getPortfolioInfo()
 ```
-
 Sample Output:
 ```python
 {'AccountValue': u'100000.00', 'BuyingPower': u'100000.00', 'AnnualReturn': u'0.00 ', 'Cash': u'100000.00'}
