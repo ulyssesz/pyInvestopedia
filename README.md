@@ -67,6 +67,7 @@ Sample Output:
 ```python
 b = Browser(user, p)
 securities = b.getSecurities()
+print securities
 for s in securities:
   print s
 ```
