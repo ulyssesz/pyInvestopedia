@@ -40,7 +40,7 @@ A list of id,name pairs.
 ```
 
 ## To change portfolio
-Investopedia, by default chooses a portfolio when logging in. To make sure you are managing the correct portfolio, use `Browser.setGame(id)`
+Investopedia, by default chooses a portfolio when logging in. To make sure you are managing the correct portfolio, use `Browser.setGame(id)` to change the active portfolio.
 
 ```python
 b = Browser(user, p)
@@ -49,7 +49,7 @@ b.setGame(game_id)
 ```
 
 ## Get portfolio info
-`Browser.getPortfolioInfo()` retrieves the `AccountValue`, `BuyingPower`, `AnnualReturn` and `Cash` for the portfolio chosen (by `b.setGame()`).
+`Browser.getPortfolioInfo()` retrieves the `AccountValue`, `BuyingPower`, `AnnualReturn` and `Cash` for the active portfolio.
 
 ```python
 b = Browser(user, p)
@@ -61,7 +61,53 @@ Sample Output:
 {'AccountValue': u'100000.00', 'BuyingPower': u'100000.00', 'AnnualReturn': u'0.00 ', 'Cash': u'100000.00'}
 ```
 
+## Get Securities
+`Browser.getSecurities()` retrieves the securities from the active portfolio. It returns a list of `Security` objects. (Note: if there are multiple orders for the same stock(issued at different times), there will be an object sent for each.)
 
+```python
+b = Browser(user, p)
+securities = b.getSecurities()
+for s in securities:
+  print s
+```
 
+Sample Output:  
+```python
+[<__main__.Security object at 0x886b70>, <__main__.Security object at 0x886c30>, <__main__.Security object at 0x8866b0>, <__main__.Security object at 0x6c7df0>, <__main__.Security object at 0x88b2b0>]
+Security:
+	Symbol: BBRY
+	Quantity: 1000
+	Security Type: SHORT
+	Time: 12/2/2013 02:15 PM
+Security:
+	Symbol: MSFT
+	Quantity: 500
+	Security Type: SHORT
+	Time: 12/2/2013 02:15 PM
+Security:
+	Symbol: MSFT
+	Quantity: 100
+	Security Type: SHORT
+	Time: 12/2/2013 02:48 PM
+Security:
+	Symbol: AAPL
+	Quantity: 500
+	Security Type: LONG
+	Time: 12/2/2013 02:15 PM
+Security:
+	Symbol: IBM
+	Quantity: 500
+	Security Type: LONG
+	Time: 12/2/2013 02:15 PM
+```
 
+## `Security` class
+It has the following properties (Note: They are all strings): 
+`symbol`          : The symbol of security  
+`qty`             : The quantity of the one order  
+`securityType`    : Security type `LONG` or `SHORT`  
+`purchasePrice`   : Purchase price of this order (per stock)  
+`adjPurchasePrice`: Adjusted price (per stock)  
+`currentPrice`    : Current market price  
+`time`            : Time of purchase  
 
