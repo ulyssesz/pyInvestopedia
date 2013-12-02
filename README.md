@@ -103,7 +103,7 @@ Security:
 ```
 
 ## `Security` class
-It has the following properties (Note: They are all strings): 
+It has the following properties (Note: They are all strings):  
 `symbol`          : The symbol of security  
 `qty`             : The quantity of the one order  
 `securityType`    : Security type `LONG` or `SHORT`  
