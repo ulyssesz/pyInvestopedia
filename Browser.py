@@ -58,53 +58,42 @@ class Browser():
 		url = 'http://www.investopedia.com/simulator/portfolio/default.aspx'
 		time.sleep(1)
 		response = self.br.open(url, urlencode(data)).read()
-
-	def getBoughtStocks(self):
+	
+	def getSecurities(self):
 		url = 'http://www.investopedia.com/simulator/portfolio'
-		template = 'http://www.investopedia.com/simulator/Ajax/Portfolio/AssetHistory.aspx?Symbol=%s&PortfolioId=%s&&ST=%s&cId=%s'
-		time.sleep(1)
 		response = self.br.open(url)
 		soup = BSoup(response.read())
-		symbols = []
-		for x in soup.find_all('tr', {'id':re.compile('S*PS_LONG_\d*')}):
-			all_td = x.find_all('td')
-			if all_td != None and len(all_td) > 3:
-				s = all_td[2].text.strip()
-				quant = int(all_td[4].text.strip())
-				cost = float(all_td[5].text.strip().strip('$'))
-				symbols.append((s, x['id'], quant, cost))
-
-		# Get money
-		money_tag = soup.find('span', id = 'ctl00_MainPlaceHolder_currencyFilter_ctrlPortfolioDetails_PortfolioSummary_lblBuyingPower')		   
-		if money_tag != None and money_tag.text != None:
-			moneyString = money_tag.text
-			moneyString = string.replace(moneyString, '$', '')
-			moneyString = string.replace(moneyString, ',', '')
-			moneyString = float(moneyString)
-			money = moneyString
-			self.accountInfo.money = money
-			logging.info('%s money %d' % (self.accountInfo.myId, money))
-
-
-		self.boughtStocks = []
-		for s, t, quant, cost in symbols:
-			if 'SPS' in t: 
-				q = 'short'
-				transType = 2
-			else: 
-				q = 'long'
-				transType = 0
-
-			new_url = template % (s, self.accountInfo.profileId, q, t)
-			time.sleep(1)
-			#print new_url
-			response2 = self.br.open(new_url)
-			soup2 = BSoup(response2.read())
-			time_tag = soup2.find_all('tr')[1].find_all('td')[0].text.strip()
-			date = datetime.datetime.strptime(time_tag, '%m/%d/%Y %I:%M %p')
-			self.boughtStocks.append(BoughtStock(s, quant, cost, date, transType = transType))
-
-		return self.boughtStocks
+		allSecurities = []
+		
+		template = 'http://www.investopedia.com/simulator/Ajax/Portfolio/AssetHistory.aspx?Symbol=%s&PortfolioId=%s&&ST=%s&cId=%s'
+		for trTag in soup.find_all('tr', {'id':re.compile('S*PS_LONG_\d*')}):
+			summary_td = trTag.find_all('td')
+			if 'HP' in trTag['id']: continue
+			if 'SPS_LONG' in trTag['id']:
+				securityType = 'SHORTED STOCK'
+			elif 'PS_LONG' in trTag['id']:
+				securityType = "STOCK"
+			else:
+				raise Exception('Stock type not identified')
+			securityDetails = re.search("TogglePanel\(this.parentNode,'(.*)','(.*)','(.*)'\);", summary_td[0]['onclick'])
+			order_url = template % (securityDetails.group(1), securityDetails.group(2), securityDetails.group(3), trTag['id'])
+			response = self.br.open(order_url)
+			order_data = BSoup(response.read())
+			for indv_order in order_data.find('table').find_all('tr')[1:]:
+				indv_td = indv_order.find_all('td')
+				
+			
+				newSecurity = Security(	symbol = summary_td[2].text,
+																qty = indv_td[1].text,
+																securityType = securityType,
+																purchasePrice = self.stripNumbers(indv_td[2].text),
+																adjPurchasePrice = self.stripNumbers(indv_td[4].text),
+																currentPrice = self.stripNumbers(summary_td[6].text),
+																time = indv_td[0].text
+				)
+				allSecurities.append(newSecurity)
+			
+		return allSecurities
 		
 	def placeOrder(self, stockOrder):
 		data = {'submitOrder':'Submit Order >>'}
@@ -180,7 +169,20 @@ class Browser():
 		s = s.strip('$%')
 		s = string.replace(s, ',', '')
 		return s
+
+class Security(object):
+	def __init__(self, symbol, qty, securityType, purchasePrice, adjPurchasePrice, currentPrice, time):
+		self.symbol = symbol
+		self.qty = qty
+		self.securityType = securityType
+		self.purchasePrice = purchasePrice
+		self.adjPurchasePrice = adjPurchasePrice	
+		self.currentPrice = currentPrice
+		self.time = time
 		
+	def __str__(self):
+		return "Security:\n\tSymbol: %s\n\tQuantity: %s\n\tSecurity Type: %s" % (self.symbol, self.qty, self.securityType)
+	
 class StockOrder(object):
 	transactionTypes = {	'Buy'	:	1,
 							'Sell'	:	2,
@@ -213,16 +215,18 @@ def main():
 	b = Browser(user, p)
 	#print b.getGames()
 	#print b.stripNumbers('$100,000,000.000%')
-	print b.getPortfolioInfo()
-	print b.getGames()
-	1/0
+	#print b.getPortfolioInfo()
+	#print b.getGames()
+	
 	for i,j in b.getGames():
-		print i,j
-		b.setGame(i)
-		s = StockOrder('GOOG', 'Buy', 1, price = 10)
+		if 'Personal' in j:
+			b.setGame(i)
+			for p in b.getSecurities():
+				print p
+		#s = StockOrder('GOOG', 'Buy', 1, price = 10)
 		#print b.getMaxShare(s)
-		b.placeOrder(s)
-	print s
+		#b.placeOrder(s)
+	#print s
 	
 
 if __name__ == '__main__':
