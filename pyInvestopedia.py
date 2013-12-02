@@ -70,9 +70,9 @@ class Browser():
 			summary_td = trTag.find_all('td')
 			if 'HP' in trTag['id']: continue
 			if 'SPS_LONG' in trTag['id']:
-				securityType = 'SHORTED STOCK'
+				securityType = 'LONG'
 			elif 'PS_LONG' in trTag['id']:
-				securityType = "STOCK"
+				securityType = "SHORT"
 			else:
 				raise Exception('Stock type not identified')
 			securityDetails = re.search("TogglePanel\(this.parentNode,'(.*)','(.*)','(.*)'\);", summary_td[0]['onclick'])
@@ -181,7 +181,7 @@ class Security(object):
 		self.time = time
 		
 	def __str__(self):
-		return "Security:\n\tSymbol: %s\n\tQuantity: %s\n\tSecurity Type: %s" % (self.symbol, self.qty, self.securityType)
+		return "Security:\n\tSymbol: %s\n\tQuantity: %s\n\tSecurity Type: %s\n\tTime: %s" % (self.symbol, self.qty, self.securityType, self.time)
 	
 class StockOrder(object):
 	transactionTypes = {	'Buy'	:	1,
@@ -223,6 +223,7 @@ def main():
 			b.setGame(i)
 			for p in b.getSecurities():
 				print p
+				
 		#s = StockOrder('GOOG', 'Buy', 1, price = 10)
 		#print b.getMaxShare(s)
 		#b.placeOrder(s)
